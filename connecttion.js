@@ -2,15 +2,15 @@ const mysql = require('mysql2');
 require('dotenv').config();
 
 var connection = mysql.createConnection({
-    port: '3306',
-    host: 'localhost',
-    user: 'root',
-    password: 'Trung123',
-    database: 'dbTest'
+    port: process.env.DB_PORT,
+    host: process.env.DB_HOST,
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 connection.connect((err) => {
-    if(!err) {
+    if(!err) {      
         console.log('connected')
     } else {
         console.log(err);
