@@ -6,6 +6,13 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
+//
+const { OAuth2Client } = require('google-auth-library');
+
+// authen
+var auth = require('../services/authentication');
+var checkRole = require('../services/checkRole');
+
 router.post('/signup', (req, res) => {
     let user = req.body;
     query = "select email,password,role,status from user where email=?";
@@ -59,18 +66,21 @@ router.post('/login', (req, res) => {
     })
 })
 
-var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
-    }
-})
+// Khởi tạo OAuth2Client với Client ID và Client Secret 
+const myOAuth2Client = new OAuth2Client(
+    process.env.GOOGLE_MAILER_CLIENT_ID,
+    process.env.GOOGLE_MAILER_CLIENT_SECRET
+);
+
+// Set Refresh Token vào OAuth2Client Credentials
+myOAuth2Client.setCredentials({
+    refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN
+});
 
 router.post('/forgotPassword', (req, res) => {
     const user = req.body;
     query = "select email,password from user where email=?";
-    connection.query(query,[user.email],(err,result) => {
+    connection.query(query,[user.email], async (err,result) => {
 
         if (err) return res.status(500).json(err);
 
@@ -78,34 +88,41 @@ router.post('/forgotPassword', (req, res) => {
             if (result.length <= 0) {
                 return res.status(200).json({
                     message: "if Password sent sucessfully to your email",
-                    email: user.email,
-                    user: process.env.EMAIL,
-                    check: result
+                    result: result,
+                    mailFrom: req.body
                 })
             }
 
             else {
+
+                const myAccessTokenObject = await myOAuth2Client.getAccessToken();
+                const myAccessToken = myAccessTokenObject?.token;
+
+                const transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                      type: 'OAuth2',
+                      user: process.env.ADMIN_EMAIL_ADDRESS,
+                      clientId: process.env.GOOGLE_MAILER_CLIENT_ID,
+                      clientSecret: process.env.GOOGLE_MAILER_CLIENT_SECRET,
+                      refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN,
+                      accessToken: myAccessToken
+                    }
+                });
+
                 var mailOptions = {
-                    from: process.env.EMAIL,
-                    to: result[0].email,
+                    to: user.email,
                     subject: 'Password by Cafe Management System',
                     html: '<p><b> Your Login details for Cafe Management System </b><br> <b>Email: </b>' + result[0].email + '<br> <b>Password: </b>' + result[0].password + '<br> <a href="http://localhost:8080/user/login"> Click here to Login </a>' + '</p>'
                 }
     
-                transporter.sendMail(mailOptions, (err, result) => {
-                    if (err) {
-                        console.log('err', err);
-
-                    } else {
-                        console.log('Email sent: ', result.response)
-                    }
+                await transporter.sendMail(mailOptions, (err, result) => {
+                    if (err) { console.log('err', err) } 
+                    else { console.log('Email sent: ', result.response)}
                 })
     
                 return res.status(200).json({
                     message: "else Password sent successfully yo your email",
-                    resultMail: result[0].email,
-                    resultPass: result[0].password,
-
                 })
             }
         }
@@ -115,6 +132,48 @@ router.post('/forgotPassword', (req, res) => {
         })
 
     })
+})
+
+router.get('/get', auth.authenticateToken, (req, res) => {
+    var query = "select id,name,email,contactNumber,status from user where role='user'";
+    connection.query(query, (err, result) => {
+        if(!err) {
+            return res.status(200).json(result);
+        }
+        else {
+            return res.status(500).json(err)
+        }
+    })
+})
+
+router.patch('/update', (req, res) => {
+    let user = req.body;
+    var query = "update user set status=? where id=?";
+    connection.query(query, [user.status, user.id], (err, result) => {
+        if(!err) {
+            if(result.affectedRows == 0) {
+                return res.status(404).json({
+                    message: "User id does not exist"
+                })
+            }
+            return res.status(200).json({
+                message: "User Updated Successfully"
+            })
+        }
+        else {
+            return res.status(500).json(err);
+        }
+    })
+})
+
+router.get('/checkToken', auth.authenticateToken, (req, res) => {
+    return res.status(200).json({
+        message: "true"
+    });
+})
+
+router.post('/changePassword', (req, res) => {
+    // const  
 })
 
 module.exports = router;
