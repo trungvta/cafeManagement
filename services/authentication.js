@@ -9,7 +9,7 @@ function authenticateToken(req,res,next) {
 
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, response) => {
         if(err) return res.sendStatus(403)
-
+        console.log('res', response);
         res.locals = response;
         next();
     })

@@ -172,8 +172,33 @@ router.get('/checkToken', auth.authenticateToken, (req, res) => {
     });
 })
 
-router.post('/changePassword', (req, res) => {
-    // const  
+router.post('/changePassword', auth.authenticateToken, (req, res) => {
+    const user = req.body;
+    const email =  res.locals.email;
+    var query = "select * from user where email=? and password=?";
+    connection.query(query, [email, user.oldPassword], (err, result) => {
+        if(err) return res.status(500).json(err);
+        else {
+            console.log('user res', result)
+            if(result.length <= 0) {
+                return res.status(400).json({
+                    message: "Incorrect Old Password"
+                })
+            }
+            else if(result[0].password == user.oldPassword) {
+                query = "update user set password=? where email=?";
+                connection.query(query, [user.newPassword, email], (err, result) => {
+                    if(err) return res.status(500).json(err);
+                    else {
+                        return res.status(200).json({
+                            message: "Password Update Successfully"
+                        })
+                    }
+
+                })
+            }
+        }
+    })
 })
 
 module.exports = router;
