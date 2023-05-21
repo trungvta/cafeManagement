@@ -1,10 +1,11 @@
+require('dotenv').config();
+
 const express = require('express');
 const connection = require('../connecttion');
 const router = express.Router();
 
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-require('dotenv').config();
 
 //
 const { OAuth2Client } = require('google-auth-library');
