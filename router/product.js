@@ -61,7 +61,7 @@ router.get('/getById/:id', auth.authenticateToken, (req, res, next) => {
     })
 });
 
-router.path('/update', auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
+router.patch('/update', auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
     let product = req.body;
     var query = "update product set name=?,categoryId=?,description=?,price=? where id=?";
     connection.query(query, [product.name,product.categoryId,product.description,product.price,product.id], (err, results) => {
@@ -101,7 +101,7 @@ router.delete('/delete/:id', auth.authenticateToken, checkRole.checkRole, (req, 
     })
 });
 
-router.path('/updateStatus', auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
+router.patch('/updateStatus', auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
     let user = req.body;
     var query = "update product set status=? where id=?";
     connection.query(query, [user.status,user.id], (err, results) => {
