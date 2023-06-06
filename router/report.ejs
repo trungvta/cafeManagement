@@ -1,4 +1,4 @@
--<html>
+<html>
     <head>
         <style>
             table {
@@ -25,7 +25,7 @@
             </tr>
             <tr>
                 <th>Contact Number: <%= contactNumber %></th>
-                <th>Pay Method: <%= payMethod %></th>
+                <th>Pay Method: <%= paymentMethod %></th>
             </tr>
         </table>
 
@@ -40,19 +40,19 @@
                 <th>Sub Total</th>
             </tr>
 
-            <% if(productDetails.length > 0) { %>
-                <% productDetails.forEch(product => {) %>
+            <% if(productDetails && productDetails.length > 0) { %>
+                <% productDetails.forEach(product => { %>
                     <tr>
-                        <td><% product.name %></td>
-                        <td><% product.category %></td>
-                        <td><% product.quantity %></td>
-                        <td><% product.price %></td>
-                        <td><% product.total %></td>
+                        <td><%= product.name %></td>
+                        <td><%= product.category %></td>
+                        <td><%= product.quantity %></td>
+                        <td><%= product.price %></td>
+                        <td><%= product.total %></td>
                     </tr>
-                <%};%>
-            <%}%>
+                <% }); %>
+            <% } %>
         </table>
 
-        <h3>Total: <% totalAmount %></h3>
+        <h3>Total: <%= totalAmount %></h3>
     </body>
 </html>

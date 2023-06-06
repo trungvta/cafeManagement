@@ -25,6 +25,7 @@
     "nodemailer": "^6.9.2",
     "nodemon": "^2.0.22",
     "path": "^0.12.7",
+    "phantomjs-prebuilt": "^2.1.16",
     "uuid": "^9.0.0"
   }
 }

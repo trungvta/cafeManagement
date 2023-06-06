@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
-app.use('/', dashboardRoute);
+app.use('/dashboard', dashboardRoute);
 app.use('/user', userRoute);
 app.use('/category', categoryRoute);
 app.use('/product', productRoute);
