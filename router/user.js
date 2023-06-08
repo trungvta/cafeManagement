@@ -58,6 +58,8 @@ router.post('/login', (req, res) => {
             res.status(200).json({
                 token: accessToken
             })
+
+            console.log('accessToken', accessToken)
         }
         else {
             return res.status(400).json({
