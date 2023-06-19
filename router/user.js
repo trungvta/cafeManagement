@@ -81,24 +81,46 @@ myOAuth2Client.setCredentials({
 });
 
 router.post('/forgotPassword', (req, res) => {
+    console.log(req.body)
     const user = req.body;
     query = "select email,password from user where email=?";
     connection.query(query,[user.email], async (err,result) => {
 
+        console.log(err);
+        console.log(result);
+
         if (err) return res.status(500).json(err);
 
         if(!err) {
+            console.log('!err');
+            console.log('result.length: ', result.length);
+
+            // if (result.length <= 0) {
+            //     console.log('result.length <= 0');
+
+            //     return res.status(200).json({
+            //         message: "if Password sent sucessfully to your email",
+            //         result: result,
+            //         mailFrom: req.body
+            //     })
+            // }
+
             if (result.length <= 0) {
-                return res.status(200).json({
-                    message: "if Password sent sucessfully to your email",
-                    result: result,
-                    mailFrom: req.body
+                console.log('result.length <= 0');
+
+                return res.status(401).json({
+                    message: "Password not found",
                 })
             }
 
             else {
 
+                console.log('else');
+
                 const myAccessTokenObject = await myOAuth2Client.getAccessToken();
+
+                console.log('myAccessTokenObject', myAccessTokenObject);
+
                 const myAccessToken = myAccessTokenObject?.token;
 
                 const transporter = nodemailer.createTransport({
@@ -177,9 +199,12 @@ router.get('/checkToken', auth.authenticateToken, (req, res) => {
 
 router.post('/changePassword', auth.authenticateToken, (req, res) => {
     const user = req.body;
-    const email =  res.locals.email;
+    const email = res.locals.email;
+    console.log(user)
+    console.log(email)
+
     var query = "select * from user where email=? and password=?";
-    connection.query(query, [email, user.oldPassword], (err, result) => {
+    connection.query(query, [email,user.oldPassword], (err, result) => {
         if(err) return res.status(500).json(err);
         else {
             console.log('user res', result)

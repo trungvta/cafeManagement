@@ -10,8 +10,6 @@ var checkRole = require('../services/checkRole');
 
 router.post('/add', auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
     let category = req.body;
-    console.log(category);
-    console.log('asdkasjkdsajd')
     query = "insert into category (name) values(?)";
     connection.query(query, [category.name], (err,results) => {
         if(!err) {
@@ -56,6 +54,26 @@ router.patch('/update', auth.authenticateToken, checkRole.checkRole, (req, res, 
             return res.status(500).json(err)
         }
     })
-})
+});
+
+router.delete('/delete/:id', auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
+    const id = req.params.id;
+    var query = "delete from category where id=?";
+    connection.query(query, [id], (err, results) => {
+        if(!err) {
+            if(results.affectedRows == 0) {
+                res.status(404).json({
+                    message: "Category is does not found"
+                })
+            }
+            res.status(200).json({
+                message: "Category Deleted Successfully"
+            })
+        }
+        else {
+            res.status(500).json(err)
+        }
+    })
+});
 
 module.exports = router;
