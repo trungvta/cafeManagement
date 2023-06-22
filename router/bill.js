@@ -19,9 +19,14 @@ router.post('/generateReport', auth.authenticateToken, (req, res) => {
     const orderDetails = req.body;
     var productDetailsReport = JSON.parse(orderDetails.productDetails);
 
+    console.log('generatedUuid:', generatedUuid);
+    console.log('Email:', res.locals.email);
+
     query = "insert into bill (name,uuid,email,contactNumber,paymentMethod,total,productDetails,createBy) values(?,?,?,?,?,?,?,?)";
     connection.query(query, [orderDetails.name,generatedUuid,orderDetails.email,orderDetails.contactNumber,orderDetails.paymentMethod,orderDetails.totalAmount,orderDetails.productDetails,res.locals.email], (err,results) => {
         if(!err) {
+
+            console.log('!err');
 
             const filePath = path.join(__dirname,'',"report.ejs");
             ejs.renderFile( filePath, {productDetails:productDetailsReport,name:orderDetails.name,email:orderDetails.email,contactNumber:orderDetails.contactNumber,paymentMethod:orderDetails.paymentMethod,totalAmount:orderDetails.totalAmount},(err,result) => {
@@ -36,6 +41,9 @@ router.post('/generateReport', auth.authenticateToken, (req, res) => {
             })
         }
         else {
+
+            console.log('500');
+
             return res.status(500).json(err)
         }
     })
@@ -44,7 +52,11 @@ router.post('/generateReport', auth.authenticateToken, (req, res) => {
 router.post('/getPDF', auth.authenticateToken, (req, res) => {
     const orderDetails = req.body;
 
+    console.log(orderDetails);
+
     const pdfPath = './generated_pdf/' + orderDetails.uuid + '.pdf';
+
+    console.log(pdfPath);
 
     if(fs.existsSync(pdfPath)) {
         res.contentType("application/pdf");
@@ -60,10 +72,8 @@ router.post('/getPDF', auth.authenticateToken, (req, res) => {
                 return res.status(500).json(err)
             }
 
-
             else {
-                console.log('orderDetails.uuid', orderDetails.uuid)
-
+                console.log('orderDetails.uuid', orderDetails.uuid);
                 pdf.create(result).toFile('./generated_pdf/' + orderDetails.uuid + ".pdf", (err,data) => {
                     if (err) res.status(500).json(err) 
                     else {
