@@ -6,13 +6,6 @@ const connectionDB = require('../connecttionDB');
 const router = express.Router();
 
 // Sử dụng phương thức `use()` để kích hoạt router middleware
-var path = '';
-router.use((req, res, next) => {
-    console.log('router path:', req.baseUrl);
-    path = req.baseUrl.split('/').join(' ');
-    console.log('path:', path);
-    next();
-});
 
 
 // authen
