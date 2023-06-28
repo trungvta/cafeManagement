@@ -2,7 +2,22 @@ require('dotenv').config();
 
 const express = require('express');
 const connection = require('../connecttion');
+const connectionDB = require('../connecttionDB');
+
 const router = express.Router();
+
+var path = '';
+router.use((req, res, next) => {
+    path = req.baseUrl.split('/').join(' ');
+
+    connectionDB.createCollect(path);
+    // connect to db to insert
+
+    connectionDB.connect
+
+    next();
+});
+
 
 // authen
 var auth = require('../services/authentication');
