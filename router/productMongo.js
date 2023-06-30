@@ -1,13 +1,13 @@
 require('dotenv').config();
 
 const express = require('express');
-const { client, collectDB } = require('../connecttionDB');
+const { connection } = require('../connecttionDB');
 
 const router = express.Router();
 
 var path = '';
 router.use((req, res, next) => {
-    path = req.baseUrl.split('/').join(' ');
+    path = req.baseUrl.split('/').join('');
 
     // collectDB.collect(path);
 
@@ -41,10 +41,20 @@ router.use((req, res, next) => {
 var auth = require('../services/authentication');
 var checkRole = require('../services/checkRole');
 
-router.post('/add', checkRole.checkRole, (req, res) => {
-    let product = req.body;
-    
-    console.log('router.post', client);
+console.log('====================== path', path);
+
+router.post('/add', (req, res) => {
+    const body = req.body;
+
+
+    connection.connect(path, body).then(async () => {
+        console.log('======================Kết nối tới MongoDB thành công');
+    }).catch((err) => {
+        console.log('======================Kết nối tới MongoDB thất bại: ' + err.message);
+    });
+
+
+    // collection.insertOne({ name: 'sdsd', age: 20 });
 });
 
 router.get('/get', auth.authenticateToken, (req, res, next) => {

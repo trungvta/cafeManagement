@@ -4,7 +4,8 @@ const connection = require('./connecttion');
 
 //mongo
 const { client } = require('./connecttionDB');
-client;
+client.connect();
+
 //mongo
 
 //Router

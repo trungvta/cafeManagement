@@ -8,27 +8,38 @@ const uriString = 'mongodb://localhost:27017/mydb';
 const clientDB = new MongoClient(uriString, { useUnifiedTopology: true });
 
 // Kết nối tới MongoDB server và tạo collection
-
-const client = clientDB.connect();
-    // console.log('async connect')
-    // try {
-    //     // Kết nối tới MongoDB server
-    //     await clientDB.connect();
-    //     return clientDB.db('mydb');
-
-    // } catch (err) {
-    //     console.log(err);
-    // } finally {
-    //     // Đóng kết nối khi hoàn thành
-    //     await clientDB.close();
-    // } 
-
-const collectDB = {
-  
-    collect: async (collectionName,) => {
+const dbClient = {
+    connect: async () => {
         try {
+            // Kết nối tới MongoDB server
+            await clientDB.connect();
+        } catch (err) {
+            console.log('dbClient Error ================================', err);
+        } 
+    },
+    close: async () => {
+        try {
+            await this.clientDB.client.close();
+            console.log('Đóng kết nối MongoDB thành công');
+        } catch (err) {
+            console.log('Đóng kết nối MongoDB thất bại: ' + err.message);
+        }
+    }
+}
 
-        console.log('=================================================== createCollect', clientDB);
+const connection = {
+    connect: async (collectionName, data) => {
+        console.log(data);
+
+        const collection = clientDB.db('mydb').collection(collectionName);
+        collection.insertOne(data);
+    }
+}
+
+const dbCollection = {
+  
+    collect: async (collectionName) => {
+        try {
 
         const client = await clientDB.connect();
         const database = client.db('mydb');
@@ -61,12 +72,10 @@ const collectDB = {
     }
 }
 
-
-function checkListColllections(checkName) {
-    
-}
+// const dbConnect = dbClient.connect();
 
 module.exports = {
-    client: client,
-    collectDB: collectDB
+    client: dbClient,
+    connection: connection,
+    collection: dbCollection
 };
