@@ -1,7 +1,7 @@
 const express = require('express');
 
 const connection = require('../connecttion');
-const connectionDB = require('../connecttionDB');
+const connectionDB = require('../connectionDB');
 
 const router = express.Router();
 

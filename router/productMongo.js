@@ -1,8 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
-const { connection } = require('../connecttionDB');
-
+const { connection } = require('../connectionDB');
 const router = express.Router();
 
 var path = '';
@@ -41,25 +40,44 @@ router.use((req, res, next) => {
 var auth = require('../services/authentication');
 var checkRole = require('../services/checkRole');
 
-console.log('====================== path', path);
-
 router.post('/add', (req, res) => {
     const body = req.body;
 
-
-    connection.connect(path, body).then(async () => {
-        console.log('======================Kết nối tới MongoDB thành công');
-    }).catch((err) => {
-        console.log('======================Kết nối tới MongoDB thất bại: ' + err.message);
-    });
-
+    connection(process.env.DBMongoName, path)
+        .addRecord(body)
+        .then(result => {
+            console.log('réult', result);
+            if(result == null) {
+                return res.status(400).json({
+                    message: "Bad Request"
+                });
+            } else {
+                return res.status(200).json({
+                    message: "Product added successfully"
+                })
+            }
+        }).catch((err) => {
+            return res.status(500).json(err);
+        });
 
     // collection.insertOne({ name: 'sdsd', age: 20 });
 });
 
-router.get('/get', auth.authenticateToken, (req, res, next) => {
-    var query = "select p.id,p.name,p.description,p.price,p.status,c.id as categoryId,c.name as categoryName from product as p INNER JOIN category as c where p.categoryId = c.id";
-    
+router.get('/get', (req, res, next) => {
+    connection(process.env.DBMongoName, path)
+        .getRecord()
+        .then(result => {
+            console.log('result', result);
+            if(result == null) {
+                return res.status(400).json({
+                    message: "Bad Request"
+                });
+            } else {
+                return res.status(200).json(result)
+            }
+        }).catch((err) => {
+            return res.status(500).json(err);
+        });
 });
 
 router.get('/getByCategory/:id', auth.authenticateToken, (req, res, next) => {
@@ -76,10 +94,26 @@ router.get('/getById/:id', auth.authenticateToken, (req, res, next) => {
    
 });
 
-router.patch('/update', auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
-    let product = req.body;
-    var query = "update product set name=?,categoryId=?,description=?,price=? where id=?";
+router.patch('/update', (req, res, next) => {
+    let data = req.body;
+    const query = req.body.id;
     
+    connection(process.env.DBMongoName, path)
+        .updateRecord(query, data)
+        .then(result => {
+            console.log('result', result);
+            if(result == null) {
+                return res.status(400).json({
+                    message: "Bad Request"
+                });
+            } else {
+                return res.status(200).json({
+                    message: "Update successfully"
+                })
+            }
+        }).catch((err) => {
+            return res.status(500).json(err);
+        });
 });
 
 router.delete('/delete/:id', auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
