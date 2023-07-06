@@ -116,10 +116,30 @@ router.patch('/update', (req, res, next) => {
         });
 });
 
-router.delete('/delete/:id', auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
+router.delete('/delete/:id', (req, res, next) => {
     const id = req.params.id;
-    var query = "delete from product where id=?";
-    
+    connection(process.env.DBMongoName, path)
+        .deleteRecord(id)
+        .then(result => {
+            console.log('result', result);
+            if(result == null) {
+                return res.status(400).json({
+                    message: "Bad Request"
+                });
+            } 
+            else if(result && result.notFound) {
+                res.status(404).json({
+                    message: "Product not found"
+                })
+            }
+            else {
+                return res.status(200).json({
+                    message: "Update successfully"
+                })
+            }
+        }).catch((err) => {
+            return res.status(500).json(err);
+        });
 });
 
 router.patch('/updateStatus', auth.authenticateToken, checkRole.checkRole, (req, res, next) => {

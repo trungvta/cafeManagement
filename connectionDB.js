@@ -73,24 +73,31 @@ const connection = (databaseName, collectionName) => {
             },
 
             updateRecord: async (query, data) => {
-                console.log(query)
-                const filter = { _id: ObjectId(query) };
-
-                console.log('filter', filter);
                 try {
+                    const filter = { _id: new ObjectId(query) };
                     await dbCollection.updateOne(filter, { $set: data });
                     return true;
                 } catch (error) {
                     console.error('Error in addRecord:', error);
                     return null;
                 }
-
             },
 
-            deleteRecord: async (filter) => {
-                console.log('deleteRecord', data);
+            deleteRecord: async (query) => {
+                try {
+                    const result = await dbCollection.findOne({ _id: new ObjectId(query) }) || { notFound: true };;
+                    if(result && !result.notFound) {
+                        const filter = { _id: new ObjectId(query) };
+                        await dbCollection.deleteOne(filter);
+                        return true;
+                    }
 
-                return dbCollection.deleteOne(filter);
+                    return result;
+                    
+                } catch (error) {
+                    console.error('Error in deleteRecord:', error);
+                    return null;
+                }
             }
         };
     } catch (error) {
