@@ -11,7 +11,9 @@ var connection = mysql.createConnection({
 
 connection.connect((err) => {
     if(!err) {      
-        console.log('connected')
+        console.log('connected');
+        console.log(process.env.DB_HOST);
+        console.log(process.env.DB_PORT);
     } else {
         console.log(err);
         console.log('error');

@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "pkg": "lib-es5/bin.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "build": ""
   },
   "keywords": [],
   "author": "",
@@ -27,6 +31,11 @@
     "nodemon": "^2.0.22",
     "path": "^0.12.7",
     "phantomjs-prebuilt": "^2.1.16",
+    "pkg": "^5.8.1",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4"
   }
 }

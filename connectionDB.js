@@ -85,7 +85,7 @@ const connection = (databaseName, collectionName) => {
 
             deleteRecord: async (query) => {
                 try {
-                    const result = await dbCollection.findOne({ _id: new ObjectId(query) }) || { notFound: true };;
+                    const result = await dbCollection.findOne({ _id: new ObjectId(query) }) || { notFound: true };
                     if(result && !result.notFound) {
                         const filter = { _id: new ObjectId(query) };
                         await dbCollection.deleteOne(filter);

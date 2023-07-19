@@ -3,8 +3,8 @@ var cors = require('cors');
 const connection = require('./connecttion');
 
 //mongo
-const { client } = require('./connectionDB');
-client.connect();
+// const { client } = require('./connectionDB');
+// client.connect();
 
 //mongo
 

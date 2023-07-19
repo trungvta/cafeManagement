@@ -6,38 +6,6 @@ const connectionDB = require('../connectionDB');
 
 const router = express.Router();
 
-var path = '';
-router.use((req, res, next) => {
-    path = req.baseUrl.split('/').join(' ');
-
-    connectionDB.createCollect(path);
-
-    // // Lấy danh sách các bảng trong cơ sở dữ liệu
-    // const collections = database.listCollections().toArray();
-    // const collectionNames = collections.map((collection) => collection.name);
-    // // Kiểm tra xem bảng có tồn tại hay không
-    // if (collectionNames.includes(collectionName)) {
-    //     console.log(`Bảng ${collectionName} đã tồn tại`);
-
-    //     // Lấy đối tượng bảng
-    //     const collection = database.collection(collectionName);
-
-    //     // Insert a document into the collection
-    //     collection.insertOne({ name: 'Trung', age: 30 });
-    //     console.log(`Inserted ${result.insertedCount} document into the collection`);
-    // } else {
-    //     const collection = database.createCollection(collectionName);
-    //     console.log(`Created collection: ${collection.collectionName}`);
-        
-    //     // Insert a document into the collection
-    //     collection.insertOne({ name: 'Trung', age: 30 });
-    //     console.log(`Inserted ${result.insertedCount} document into the collection`);
-    // }
-    
-    next();
-});
-
-
 // authen
 var auth = require('../services/authentication');
 var checkRole = require('../services/checkRole');
